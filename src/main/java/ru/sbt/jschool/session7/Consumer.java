@@ -35,7 +35,19 @@ public class Consumer implements Runnable {
     private Job getJob() {
         //TODO: Здесь нужно получить задание из store!
 
-        return null;
+        Job done;
+        synchronized (store) {
+            while (store.cnt == 0) {
+                try {
+                    store.wait();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            done = store.store[store.cnt - 1];
+            store.cnt--;
+        }
+            return done;
     }
 
     private void executeJob(Job job) throws InterruptedException {
